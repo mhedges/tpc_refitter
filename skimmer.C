@@ -325,7 +325,6 @@ void skimmer::Loop(TString FileName, TString OutputName)
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
 
 	  event = jentry;
-	  detnb = MicrotpcMetaHits_m_detNb[0];
 
 	  neutron = 0;
 	  top_alpha = 0;
@@ -339,9 +338,9 @@ void skimmer::Loop(TString FileName, TString OutputName)
       if (jentry %1000 == 0) cout << "\n\n\n\nEvent Counter: " << jentry << endl;
 
       Long64_t ientry = LoadTree(jentry);
-
 	  getentry = dtr->GetEntry(jentry);
 
+	  detnb = MicrotpcMetaHits_m_detNb[0];
 	  tstamp = MicrotpcMetaHits_m_ts_start[0][0];
       
       // Skip event if t_stamp is 0

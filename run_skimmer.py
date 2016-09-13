@@ -8,27 +8,14 @@ def main():
     ifpath = '/ghi/fs01/belle2/bdata/group/detector/BEAST/data/NTP/TPC/'
     #ofpath = '/ghi/fs01/belle2/bdata/group/detector/BEAST/data/NTP/TPC/skims/indiv_skims/'
 
-    good_run = 1
-
     ### Debug variables
     counter = 0
     r_files = []
 
     for subdir, dirs, files in os.walk(ifpath):
         for f in files:
-            r_file = str(subdir) + str(f)
-            if 'skim' not in r_file:
-                continue
-            r_files.append(r_file)
-
-
-    for subdir, dirs, files in os.walk(ifpath):
-        for f in files:
             ofpath = '/ghi/fs01/belle2/bdata/group/detector/BEAST/data/NTP/TPC/skims/'
             r_file = str(subdir) + str(f)
-
-            if r_file in r_files:
-                continue
 
             test = subdir.split('/')
 
@@ -46,31 +33,31 @@ def main():
 
             ofpath += str(date_dir) + str('/')
 
+            good_run = 1
             for i in test:
                 if i  == 'badtime' or i  == 'old' or i == 'ENV' or i == 'tmp' or i == 'ToRemove':
                     good_run = 0
 
+            ifile = os.path.join(subdir, f)
+
             if good_run == 0:
                 continue
 
-            ifile = os.path.join(subdir, f)
-            #print(ifile)
             names=f.split('/')
             infile_name=names[-1].split('.')
-            if '_skim' in infile_name:
-                continue
 
             tfile = str(infile_name[0]) + str('_skim') + str('.root')
             match = 0
 
             ofile = str(ofpath) + str(infile_name[0]) + str('_skim') + str('.root')
-            if os.path.isfile(ofile): continue
-
+            #if os.path.isfile(ofile): continue
             counter += 1
+
+            if os.path.isfile(ofile): os.system('rm %s' % (ofile))
 
             print('Infile is:', ifile)
             print('Outfile is:', ofile)
-            input('Did it work?')
+            #input('Did it work?')
 
             log = str('logs/') + str(f) + str('.log')
             os.system('bsub -q s -o %s "./skimmer %s %s"' % (log, ifile, ofile))

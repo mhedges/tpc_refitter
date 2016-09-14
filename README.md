@@ -1,17 +1,17 @@
-TPC Data Skimmer:
+TPC Refitter:
 
 This is a program written to handle the BASF2 output ntuples produced by Igal
 analysis/simulation suite and process them with only the minimal information
 needed for doing TPC analysis.
 
-Full variable list being used for analysis (will keep udpated):
+Instructions:
+The source code is in the src directory.  The refitter.C file has all of the 
+fitting and other scripts.  The compiled refitter file is the executable that 
+process the data.  It takes an input file and an output file as arguments:
+"./refitter <input_data_file> <output_data_file>".
 
-nPoints
+The run_refitter.py is a steering file that loops over directories to find root 
+files that match a certain criteria.  It then passes files into the refitter 
+program, produces output files, and sorts them.  Additionally, it submits a job 
+to bsub for every file and manages log files by default.
 
-Notes on variables:
-Energy (sum_e) is *not* linear with sum_tot!
-
-Hitside array correspoinds to:
-[Left (col<2), Right (col>78), Bottom (row<2), Top (row>334)]
-
-*Need to verify that these values are correct*

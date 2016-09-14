@@ -1,7 +1,6 @@
 import os
 import datetime
-import job_check
-import emptyfile_cleaner
+import sys
 
 def main():
     ### Paths for KEKCC
@@ -60,7 +59,11 @@ def main():
 
             log = str('logs/') + str(f) + str('.log')
             os.system('bsub -q s -o %s "./skimmer %s %s"' % (log, ifile, ofile))
+
     if counter == 0:
+        sys.path.append('src')
+        import job_check
+        import emptyfile_cleaner
         job_check.main()
         emptyfile_cleaner.main()
 

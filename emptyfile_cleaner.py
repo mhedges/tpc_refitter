@@ -17,7 +17,7 @@ def main():
                 info.append(os.path.getsize(ifile))
                 print('File is less than 1 Kb. Size =', os.path.getsize(ifile))
                 r_files.append(info)
-                #os.remove(ifile)
+                os.remove(ifile)
     print('Empty root files:', r_files)
     print('Number of empty files =', len(r_files))
 

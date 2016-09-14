@@ -24,7 +24,8 @@ def main():
 
             tpc_num = f.split('_')[0]
             date_dir = subdir.split('/')[-1]
-            print('Date dir is:', date_dir)
+            #print('Date dir is:', date_dir)
+            print('Directory is:', subdir)
 
             if tpc_num == 'tpc3':
                 ofpath += str('TPC3/')
@@ -33,15 +34,11 @@ def main():
 
             ofpath += str(date_dir) + str('/')
 
-            good_run = 1
-            for i in test:
-                if i  == 'badtime' or i  == 'old' or i == 'ENV' or i == 'tmp' or i == 'ToRemove':
-                    good_run = 0
+            if ('badtime' in test or 'old' in test or 'ENV' in test or 'tmp' in
+                    test or 'ToRemove' in test):
+                continue
 
             ifile = os.path.join(subdir, f)
-
-            if good_run == 0:
-                continue
 
             names=f.split('/')
             infile_name=names[-1].split('.')
@@ -50,14 +47,16 @@ def main():
             match = 0
 
             ofile = str(ofpath) + str(infile_name[0]) + str('_skim') + str('.root')
-            #if os.path.isfile(ofile): continue
+
+            ### Uncomment this line if only non-existing files are to be generated
+            if os.path.isfile(ofile): continue
             counter += 1
 
-            if os.path.isfile(ofile): os.system('rm %s' % (ofile))
+            ### Uncomment this line if all files must be regenerated
+            #if os.path.isfile(ofile): os.system('rm %s' % (ofile))
 
             print('Infile is:', ifile)
             print('Outfile is:', ofile)
-            #input('Did it work?')
 
             log = str('logs/') + str(f) + str('.log')
             os.system('bsub -q s -o %s "./skimmer %s %s"' % (log, ifile, ofile))

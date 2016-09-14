@@ -36,7 +36,7 @@ def main():
                 print('bsub -q s -o %s "./skimmer %s %s"' % (log, ifile.strip('\n'), ofile))
                 print()
                 #input('which file?')
-                os.system('bsub -q s -o %s "./skimmer %s %s"' % (log, ifile.strip('\n'), ofile))
+                #os.system('bsub -q s -o %s "./skimmer %s %s"' % (log, ifile.strip('\n'), ofile))
             print()
 
 if __name__ == "__main__":

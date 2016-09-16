@@ -15,3 +15,5 @@ files that match a certain criteria.  It then passes files into the refitter
 program, produces output files, and sorts them.  Additionally, it submits a job 
 to bsub for every file and manages log files by default.
 
+I only implemented tags as of v2 of BEAST ntuples.  I am keeping v2 as the first
+tag so the naming convention is consistent with the BEAST ntuple versions.

@@ -48,12 +48,12 @@ def main():
             ofile = str(ofpath) + str(infile_name[0]) + str('_skim') + str('.root')
 
             ### Uncomment this line if only non-existing files are to be generated
-            #if os.path.isfile(ofile): continue
+            if os.path.isfile(ofile): continue
 
             counter += 1
 
             ### Uncomment this line if all files must be regenerated
-            if os.path.isfile(ofile): os.system('rm %s' % (ofile))
+            #if os.path.isfile(ofile): os.system('rm %s' % (ofile))
 
             print('Infile is:', ifile)
             print('Outfile is:', ofile)
@@ -64,9 +64,9 @@ def main():
     if counter == 0:
         sys.path.append('src')
         import job_check
-        import emptyfile_cleaner
         job_check.main()
-        emptyfile_cleaner.main()
+        #import emptyfile_cleaner
+        #emptyfile_cleaner.main()
 
 if __name__ == "__main__":
     main()

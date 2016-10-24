@@ -377,6 +377,28 @@ void skimmer::Loop(TString FileName, TString OutputName)
 		c_vector[2] += z;
       }
 
+	  // Check if event is duplicate of earlier event in data tree
+	  bool duplicate = 0;
+	  for (int ev_num=0; ev_num<jentry;ev_num++) {
+		int prev_entry = dtr->GetEntry(ev_num);
+		int pix = static_cast<int>(MicrotpcMetaHits_m_pixNb[0]);
+		if (pix != npoints) continue;
+		else if (pix == npoints) {
+			for (int pix_num=0; pix_num<pix; pix_num++){
+				if (MicrotpcDataHits_m_column[pix_num] != col[pix_num]) break;
+				if (MicrotpcDataHits_m_row[pix_num] != row[pix_num]) break;
+				if (MicrotpcDataHits_m_BCID[pix_num] != bcid[pix_num]) break;
+				if (MicrotpcDataHits_m_TOT[pix_num] != tot[pix_num]) break;
+			}
+		}
+		duplicate = 1;
+	  }
+	  if (duplicate == 1) continue;
+
+
+	  // Continue analyzing current event
+	  getentry = dtr->GetEntry(jentry);
+
 	  c_vector[0] /= npoints;
 	  c_vector[1] /= npoints;
 	  c_vector[2] /= npoints;

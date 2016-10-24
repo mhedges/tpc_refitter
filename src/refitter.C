@@ -278,47 +278,12 @@ void skimmer::Loop(TString FileName, TString OutputName)
    // Get the TTree
    TTree *dtr = (TTree*)df.Get("tree");
 
-   TFile *ofile = new TFile(OutputName, "RECREATE");
-   TTree *tr = new TTree("tr","TPC Event Data");
-
    //// Initialize the TTree
    Init(dtr);
 
    //// Activate all TBranches
    dtr->SetBranchStatus("*",1);
 
-   //// Make new TTree with relevant data
-   tr->Branch("event",&event,"event/I");
-   tr->Branch("npoints",&npoints,"npoints/I");
-   tr->Branch("row",&row,"row[npoints]/I");
-   tr->Branch("col",&col,"col[npoints]/I");
-   tr->Branch("bcid",&bcid,"bcid[npoints]/I");
-   tr->Branch("tot",&tot,"tot[npoints]/I");
-   tr->Branch("tstamp",&tstamp,"tstamp/D");
-   tr->Branch("tot_sum",&tot_sum,"tot_sum/I");
-   tr->Branch("sum_e",&sum_e,"sum_e/F");
-   tr->Branch("time_range",&time_range,"time_range/I");
-   tr->Branch("chi2",&chi2,"chi2/F");
-   tr->Branch("t_length",&t_length,"t_length/D");
-   tr->Branch("de_dx",&de_dx,"de_dx/D");
-   tr->Branch("theta",&theta,"theta/D");
-   tr->Branch("phi",&phi,"phi/D");
-   tr->Branch("par_fit",&par_fit,"par_fit[6]/D");
-   tr->Branch("par_fit_err",&par_fit_err,"par_fit_err[6]/D");
-   tr->Branch("hitside",&hitside,"hitside/s");
-   tr->Branch("impact_pars",&impact_pars,"impact_pars[4]/F");
-   tr->Branch("top_alpha",&top_alpha,"top_alpha/I");
-   tr->Branch("bottom_alpha",&bottom_alpha,"bottom_alpha/I");
-   tr->Branch("xray",&xray,"xray/I");
-   tr->Branch("neutron",&neutron,"neutron/I");
-   tr->Branch("proton",&proton,"proton/I");
-   tr->Branch("other",&other,"other/I");
-   tr->Branch("vectors",&vectors,"vectors[npoints][3]/D");
-   tr->Branch("c_vector",&c_vector,"c_vector[3]/D");
-   tr->Branch("c_rms",&c_rms,"c_rms/D");
-   tr->Branch("distances",&distances,"distances[npoints]/D");
-   tr->Branch("detnb",&detnb,"detnb/I");
-   
    int nentries = dtr->GetEntriesFast();
    cout << "\n\n\n" << "Number of entries = " << nentries << "\n\n\n" << endl;
 
@@ -484,6 +449,42 @@ void skimmer::Loop(TString FileName, TString OutputName)
 
 	  //if (jentry > 5000) break;
    }
+   //// Make new TTree with relevant data
+   TFile *ofile = new TFile(OutputName, "RECREATE");
+   TTree *tr = new TTree("tr","TPC Event Data");
+
+   tr->Branch("event",&event,"event/I");
+   tr->Branch("npoints",&npoints,"npoints/I");
+   tr->Branch("row",&row,"row[npoints]/I");
+   tr->Branch("col",&col,"col[npoints]/I");
+   tr->Branch("bcid",&bcid,"bcid[npoints]/I");
+   tr->Branch("tot",&tot,"tot[npoints]/I");
+   tr->Branch("tstamp",&tstamp,"tstamp/D");
+   tr->Branch("tot_sum",&tot_sum,"tot_sum/I");
+   tr->Branch("sum_e",&sum_e,"sum_e/F");
+   tr->Branch("time_range",&time_range,"time_range/I");
+   tr->Branch("chi2",&chi2,"chi2/F");
+   tr->Branch("t_length",&t_length,"t_length/D");
+   tr->Branch("de_dx",&de_dx,"de_dx/D");
+   tr->Branch("theta",&theta,"theta/D");
+   tr->Branch("phi",&phi,"phi/D");
+   tr->Branch("par_fit",&par_fit,"par_fit[6]/D");
+   tr->Branch("par_fit_err",&par_fit_err,"par_fit_err[6]/D");
+   tr->Branch("hitside",&hitside,"hitside/s");
+   tr->Branch("impact_pars",&impact_pars,"impact_pars[4]/F");
+   tr->Branch("top_alpha",&top_alpha,"top_alpha/I");
+   tr->Branch("bottom_alpha",&bottom_alpha,"bottom_alpha/I");
+   tr->Branch("xray",&xray,"xray/I");
+   tr->Branch("neutron",&neutron,"neutron/I");
+   tr->Branch("proton",&proton,"proton/I");
+   tr->Branch("other",&other,"other/I");
+   tr->Branch("vectors",&vectors,"vectors[npoints][3]/D");
+   tr->Branch("c_vector",&c_vector,"c_vector[3]/D");
+   tr->Branch("c_rms",&c_rms,"c_rms/D");
+   tr->Branch("distances",&distances,"distances[npoints]/D");
+   tr->Branch("detnb",&detnb,"detnb/I");
+   
+   //Write TTree and close TFile
    tr->Write();
    ofile->Write();
    ofile->Close();

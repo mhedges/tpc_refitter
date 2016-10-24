@@ -51,23 +51,27 @@ def main():
                 ofile = fname
                 log = str('logs/') + str(f) + str('.log')
                 print()
-                #print('bsub -q s -o %s "./skimmer %s %s"' % (log, ifile.strip('\n'), ofile))
-                print()
+                #print('bsub -q s -o %s "src/refitter %s %s"' % (log, ifile, ofile))
+                #print()
                 #input('which file?')
-                os.system('bsub -q s -o %s "src/refitter %s %s"' % (log, ifile.strip('\n'), ofile))
+                os.system('bsub -q s -o %s "src/refitter %s %s"' % (log, ifile, ofile))
+                #os.system('rm %s' % (fname))
                 counter += 1
             print()
 
     if counter == 0:
         r_files = []
-        for subdir, dirs, files in os.walk(ifpath):
+        for subdir, dirs, files in os.walk(data_path):
             for f in files:
                 if '.py' in f: continue
                 
                 r_file = str(subdir) + str(f)
                 ifile = os.path.join(subdir, f)
                 print(ifile)
-                if os.path.getsize(ifile) < 1000:
+                dfile = TFile(ifile)
+                tree = dfile.Get('tr')
+                if (os.path.getsize(ifile) < 1000 or tree.GetEntries() == 0 or
+                        str(tree)  == '<ROOT.TObject object at 0x(nil)>'):
                     info = []
                     info.append(ifile)
                     info.append(os.path.getsize(ifile))

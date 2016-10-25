@@ -390,8 +390,8 @@ void skimmer::Loop(TString FileName, TString OutputName)
 				if (MicrotpcDataHits_m_BCID[pix_num] != bcid[pix_num]) break;
 				if (MicrotpcDataHits_m_TOT[pix_num] != tot[pix_num]) break;
 			}
+			duplicate = 1;
 		}
-		duplicate = 1;
 	  }
 	  if (duplicate == 1) continue;
 

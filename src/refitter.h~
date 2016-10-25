@@ -67,7 +67,7 @@ private :
 	int tot[30000];
 	int bcid[30000];
 
-	float e[30000];
+	double e[30000];
 
 	Int_t top_alpha, bottom_alpha, neutron, xray, other, proton;
 

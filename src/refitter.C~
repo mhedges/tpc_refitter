@@ -297,7 +297,7 @@ void skimmer::Loop(TString FileName, TString OutputName)
    tr->Branch("e",&e,"e[npoints]/D");
    tr->Branch("tstamp",&tstamp,"tstamp/D");
    tr->Branch("tot_sum",&tot_sum,"tot_sum/I");
-   tr->Branch("e_sum",&e_sum,"e_sum/F");
+   tr->Branch("e_sum",&e_sum,"e_sum/D");
    tr->Branch("time_range",&time_range,"time_range/I");
    tr->Branch("chi2",&chi2,"chi2/F");
    tr->Branch("t_length",&t_length,"t_length/D");

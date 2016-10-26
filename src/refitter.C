@@ -375,17 +375,18 @@ void skimmer::Loop(TString FileName, TString OutputName)
 				// Convert from TOT to total charge collected by pixel
 				e[pixn] = q*((c1*tot[pixn]-a1*b1)/(a1-tot[pixn])); 
 				// Convert from total charge to primary ionization (before GEMs)
-				e[pixn] /= (gem1_gain*gem2_gain);
+				//e[pixn] /= (gem1_gain*gem2_gain);
 				// Convert to energy (KeV) using work function of He:C02 mixture
-				e[pixn] *= w*1E-3;
+				//e[pixn] *= w*1E-3;
 		}
 		else {
 				// Convert from TOT to total charge collected by pixel
 				e[pixn] = q*((c2*tot[pixn]-a2*b2)/(a2-tot[pixn])); 
+				
 				// Convert from total charge to primary ionization (before GEMs)
-				e[pixn] /= (gem1_gain*gem2_gain);
+				//e[pixn] /= (gem1_gain*gem2_gain);
 				// Convert to energy (KeV) using work function of He:C02 mixture
-				e[pixn] *= w*1E-3;
+				//e[pixn] *= w*1E-3;
 		}
 		e_sum += e[pixn];
 
@@ -400,19 +401,35 @@ void skimmer::Loop(TString FileName, TString OutputName)
 
 	  // Check if event is duplicate of earlier event in data tree
 	  bool duplicate = 0;
+	  bool duppix = 0;
 	  for (int ev_num=0; ev_num<jentry;ev_num++) {
 		int prev_entry = dtr->GetEntry(ev_num);
 		int pix = static_cast<int>(MicrotpcMetaHits_m_pixNb[0]);
 		if (pix != npoints) continue;
 		else if (pix == npoints) {
 			for (int pix_num=0; pix_num<pix; pix_num++){
-				if (MicrotpcDataHits_m_column[pix_num] != col[pix_num]) break;
-				if (MicrotpcDataHits_m_row[pix_num] != row[pix_num]) break;
-				if (MicrotpcDataHits_m_BCID[pix_num] != bcid[pix_num]) break;
-				if (MicrotpcDataHits_m_TOT[pix_num] != tot[pix_num]) break;
+				if (MicrotpcDataHits_m_column[pix_num] != col[pix_num]) { 
+						duppix = 0;
+						break;
+				}
+				if (MicrotpcDataHits_m_row[pix_num] != row[pix_num]) {
+						duppix = 0;
+						break;
+				}
+				if (MicrotpcDataHits_m_BCID[pix_num] != bcid[pix_num]) {
+						duppix = 0;
+						break;
+				}
+				if (MicrotpcDataHits_m_TOT[pix_num] != tot[pix_num]) {
+						break;
+						duppix = 0;
+				}
+				duppix = 1;
 			}
-			duplicate = 1;
-			break;
+			if (duppix == 1) {
+					duplicate = 1;
+					break;
+			}
 		}
 	  }
 	  if (duplicate == 1) continue;

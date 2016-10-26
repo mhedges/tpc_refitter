@@ -294,10 +294,10 @@ void skimmer::Loop(TString FileName, TString OutputName)
    tr->Branch("col",&col,"col[npoints]/I");
    tr->Branch("bcid",&bcid,"bcid[npoints]/I");
    tr->Branch("tot",&tot,"tot[npoints]/I");
-   tr->Branch("e",&e,"e[npoints]/D");
+   tr->Branch("e",&e,"e[npoints]/F");
    tr->Branch("tstamp",&tstamp,"tstamp/D");
    tr->Branch("tot_sum",&tot_sum,"tot_sum/I");
-   tr->Branch("e_sum",&e_sum,"e_sum/F");
+   tr->Branch("e_sum",&e_sum,"e_sum/D");
    tr->Branch("time_range",&time_range,"time_range/I");
    tr->Branch("chi2",&chi2,"chi2/F");
    tr->Branch("t_length",&t_length,"t_length/D");
@@ -374,15 +374,16 @@ void skimmer::Loop(TString FileName, TString OutputName)
 		if (tot[pixn]<3) {
 				// Convert from TOT to total charge collected by pixel
 				e[pixn] = q*((c1*tot[pixn]-a1*b1)/(a1-tot[pixn])); 
+				//cout << e[pixn] << endl;
 				// Convert from total charge to primary ionization (before GEMs)
 				//e[pixn] /= (gem1_gain*gem2_gain);
 				// Convert to energy (KeV) using work function of He:C02 mixture
 				//e[pixn] *= w*1E-3;
 		}
-		else {
+		else if (tot[pixn]>2){
 				// Convert from TOT to total charge collected by pixel
 				e[pixn] = q*((c2*tot[pixn]-a2*b2)/(a2-tot[pixn])); 
-				
+				//cout << e[pixn] << endl;
 				// Convert from total charge to primary ionization (before GEMs)
 				//e[pixn] /= (gem1_gain*gem2_gain);
 				// Convert to energy (KeV) using work function of He:C02 mixture
@@ -522,7 +523,7 @@ void skimmer::Loop(TString FileName, TString OutputName)
 	  //Delete track
 	  m_gr->Delete();
 
-	  //if (jentry > 5000) break;
+	  //if (jentry > 10000) break;
    }
    tr->Write();
    ofile->Write();

@@ -1,6 +1,7 @@
 import os
 import datetime
 import sys
+from root_numpy import root2rec
 
 def main():
     ### Paths for KEKCC
@@ -13,7 +14,7 @@ def main():
 
     for subdir, dirs, files in os.walk(ifpath):
         for f in files:
-            ofpath = '/ghi/fs01/belle2/bdata/group/detector/BEAST/data/NTP/TPC/skims/'
+            ofpath = '/ghi/fs01/belle2/bdata/group/detector/BEAST/data/NTP/'
             r_file = str(subdir) + str(f)
 
             test = subdir.split('/')
@@ -52,17 +53,26 @@ def main():
 
             counter += 1
 
-            ### Uncomment this line if all files must be regenerated
+            ### Uncomment these lines if all files must be regenerated
+            #input('Warning! You are about to delete all existing files! 
             #if os.path.isfile(ofile): os.system('rm %s' % (ofile))
 
             print('Infile is:', ifile)
             print('Outfile is:', ofile)
 
             log = str('logs/') + str(f) + str('.log')
-            os.system('bsub -q s -o %s "src/refitter %s %s"' % (log, ifile, ofile))
+
+            ### Send large files to long queue, small files to short queue
+            df = root2rec(ifile, 'tree')
+            evts = len(df)
+
+            if evts > 35000:
+                os.system('bsub -q l -o %s "./refitter %s %s"' % (log, ifile, ofile))
+            else:
+                os.system('bsub -q s -o %s "./refitter %s %s"' % (log, ifile, ofile))
 
     if counter == 0:
-        sys.path.append('src')
+        sys.path.append('py')
         import job_check
         job_check.main()
         #import emptyfile_cleaner

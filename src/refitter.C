@@ -320,8 +320,18 @@ void skimmer::Loop(TString FileName, TString OutputName)
    tr->Branch("distances",&distances,"distances[npoints]/D");
    tr->Branch("detnb",&detnb,"detnb/I");
    
-   int nentries = dtr->GetEntriesFast();
+   int nentries = dtr->GetEntries();
    cout << "\n\n\n" << "Number of entries = " << nentries << "\n\n\n" << endl;
+
+   // Initialize and fill a vector of npoints for all events for identifying
+   // duplicated events
+   vector<int> evt_points;
+   for (Long64_t jentry=0; jentry<nentries;jentry++) {
+    	   Long64_t ientry = LoadTree(jentry);
+		   getentry = dtr->GetEntry(jentry);
+		   npoints = MicrotpcMetaHits_m_pixNb[0];
+		   evt_points.push_back (npoints);
+   }
 
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
 
@@ -354,6 +364,7 @@ void skimmer::Loop(TString FileName, TString OutputName)
 	  
 	  double x,y,z;
 
+	  //cout << "Event #: "<< jentry << endl;
 	  tot_sum = 0;
 	  e_sum = 0;
 
@@ -403,36 +414,73 @@ void skimmer::Loop(TString FileName, TString OutputName)
 	  // Check if event is duplicate of earlier event in data tree
 	  bool duplicate = 0;
 	  bool duppix = 0;
-	  for (int ev_num=0; ev_num<jentry;ev_num++) {
-		int prev_entry = dtr->GetEntry(ev_num);
-		int pix = static_cast<int>(MicrotpcMetaHits_m_pixNb[0]);
-		if (pix != npoints) continue;
-		else if (pix == npoints) {
-			for (int pix_num=0; pix_num<pix; pix_num++){
-				if (MicrotpcDataHits_m_column[pix_num] != col[pix_num]) { 
-						duppix = 0;
-						break;
-				}
-				if (MicrotpcDataHits_m_row[pix_num] != row[pix_num]) {
-						duppix = 0;
-						break;
-				}
-				if (MicrotpcDataHits_m_BCID[pix_num] != bcid[pix_num]) {
-						duppix = 0;
-						break;
-				}
-				if (MicrotpcDataHits_m_TOT[pix_num] != tot[pix_num]) {
-						break;
-						duppix = 0;
-				}
-				duppix = 1;
-			}
-			if (duppix == 1) {
-					duplicate = 1;
-					break;
-			}
-		}
+	  for (int ev_num = 0; ev_num<jentry; ev_num++){
+			  if (evt_points[ev_num] != npoints) continue;
+			  else if (evt_points[ev_num] == npoints){
+					  int prev_entry = dtr->GetEntry(ev_num);
+					  int pix = static_cast<int>(MicrotpcMetaHits_m_pixNb[0]);
+					  for (int pix_num=0; pix_num<pix; pix_num++){
+	                 		if (MicrotpcDataHits_m_column[pix_num] != col[pix_num]) { 
+	                 				duppix = 0;
+	                 				break;
+	                 		}
+	                 		if (MicrotpcDataHits_m_row[pix_num] != row[pix_num]) {
+	                 				duppix = 0;
+	                 				break;
+	                 		}
+	                 		if (MicrotpcDataHits_m_BCID[pix_num] != bcid[pix_num]) {
+	                 				duppix = 0;
+	                 				break;
+	                 		}
+	                 		if (MicrotpcDataHits_m_TOT[pix_num] != tot[pix_num]) {
+	                 				break;
+	                 				duppix = 0;
+	                 		}
+	                 		duppix = 1;
+					  }
+					  if (duppix == 1){
+							  duplicate = 1;
+							  break;
+					  }
+			  }
 	  }
+	  
+	  
+	  // Old way of duplicate checking (brute force, very slow)
+	  // ***************************************************** //
+	  
+	  //bool duplicate = 0;
+	  //bool duppix = 0;
+	  //for (int ev_num=0; ev_num<jentry;ev_num++) {
+	  //  int prev_entry = dtr->GetEntry(ev_num);
+	  //  int pix = static_cast<int>(MicrotpcMetaHits_m_pixNb[0]);
+	  //  if (pix != npoints) continue;
+	  //  else if (pix == npoints) {
+	  //  	for (int pix_num=0; pix_num<pix; pix_num++){
+	  //  		if (MicrotpcDataHits_m_column[pix_num] != col[pix_num]) { 
+	  //  				duppix = 0;
+	  //  				break;
+	  //  		}
+	  //  		if (MicrotpcDataHits_m_row[pix_num] != row[pix_num]) {
+	  //  				duppix = 0;
+	  //  				break;
+	  //  		}
+	  //  		if (MicrotpcDataHits_m_BCID[pix_num] != bcid[pix_num]) {
+	  //  				duppix = 0;
+	  //  				break;
+	  //  		}
+	  //  		if (MicrotpcDataHits_m_TOT[pix_num] != tot[pix_num]) {
+	  //  				break;
+	  //  				duppix = 0;
+	  //  		}
+	  //  		duppix = 1;
+	  //  	}
+	  //  	if (duppix == 1) {
+	  //  			duplicate = 1;
+	  //  			break;
+	  //  	}
+	  //  }
+	  //}
 	  if (duplicate == 1) continue;
 
 
@@ -523,7 +571,7 @@ void skimmer::Loop(TString FileName, TString OutputName)
 	  //Delete track
 	  m_gr->Delete();
 
-	  //if (jentry > 10000) break;
+	  //if (jentry > 1000) break;
    }
    tr->Write();
    ofile->Write();

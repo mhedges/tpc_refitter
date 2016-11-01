@@ -19,11 +19,17 @@ def main():
 
             test = subdir.split('/')
 
-            if 'TPC3' in test or 'TPC4' in test or 'skims' in test:
+            #if 'TPC3' in test or 'TPC4' in test or 'skims' in test:
+            #    continue
+
+            if 'skims' in test:
                 continue
 
             tpc_num = f.split('_')[0]
             date_dir = subdir.split('/')[-1]
+            if 'TPC4' in test :
+                date_dir = '2016-05-10'
+                print('Date dir is:', date_dir)
             #print('Date dir is:', date_dir)
             print('Directory is:', subdir)
 
@@ -48,13 +54,14 @@ def main():
 
             ofile = str(ofpath) + str(infile_name[0]) + str('_skim') + str('.root')
 
+
             ### Uncomment this line if only non-existing files are to be generated
             if os.path.isfile(ofile): continue
 
             counter += 1
 
             ### Uncomment these lines if all files must be regenerated
-            #input('Warning! You are about to delete all existing files! 
+            #input('Warning! You are about to delete all existing files!')
             #if os.path.isfile(ofile): os.system('rm %s' % (ofile))
 
             print('Infile is:', ifile)
@@ -62,11 +69,12 @@ def main():
 
             log = str('logs/') + str(f) + str('.log')
 
+            #os.system('bsub -q s -o %s "./refitter %s %s"' % (log, ifile, ofile))
             ### Send large files to long queue, small files to short queue
             df = root2rec(ifile, 'tree')
             evts = len(df)
 
-            if evts > 35000:
+            if evts > 60000:
                 os.system('bsub -q l -o %s "./refitter %s %s"' % (log, ifile, ofile))
             else:
                 os.system('bsub -q s -o %s "./refitter %s %s"' % (log, ifile, ofile))

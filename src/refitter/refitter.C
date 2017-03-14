@@ -376,7 +376,7 @@ void skimmer::Loop(TString FileName, TString OutputName)
 		y = static_cast<double>(row[pixn]*50.0);
 
 		bcid[pixn]=static_cast<int>(MicrotpcDataHits_m_BCID[pixn]);
-		z = static_cast<double>(bcid[pixn]*250.0);
+		z = -static_cast<double>(bcid[pixn]*250.0);
 
 		tot[pixn]=MicrotpcDataHits_m_TOT[pixn];
 		tot_sum += tot[pixn];
@@ -445,44 +445,7 @@ void skimmer::Loop(TString FileName, TString OutputName)
 			  }
 	  }
 	  
-	  
-	  // Old way of duplicate checking (brute force, very slow)
-	  // ***************************************************** //
-	  
-	  //bool duplicate = 0;
-	  //bool duppix = 0;
-	  //for (int ev_num=0; ev_num<jentry;ev_num++) {
-	  //  int prev_entry = dtr->GetEntry(ev_num);
-	  //  int pix = static_cast<int>(MicrotpcMetaHits_m_pixNb[0]);
-	  //  if (pix != npoints) continue;
-	  //  else if (pix == npoints) {
-	  //  	for (int pix_num=0; pix_num<pix; pix_num++){
-	  //  		if (MicrotpcDataHits_m_column[pix_num] != col[pix_num]) { 
-	  //  				duppix = 0;
-	  //  				break;
-	  //  		}
-	  //  		if (MicrotpcDataHits_m_row[pix_num] != row[pix_num]) {
-	  //  				duppix = 0;
-	  //  				break;
-	  //  		}
-	  //  		if (MicrotpcDataHits_m_BCID[pix_num] != bcid[pix_num]) {
-	  //  				duppix = 0;
-	  //  				break;
-	  //  		}
-	  //  		if (MicrotpcDataHits_m_TOT[pix_num] != tot[pix_num]) {
-	  //  				break;
-	  //  				duppix = 0;
-	  //  		}
-	  //  		duppix = 1;
-	  //  	}
-	  //  	if (duppix == 1) {
-	  //  			duplicate = 1;
-	  //  			break;
-	  //  	}
-	  //  }
-	  //}
 	  if (duplicate == 1) continue;
-
 
 	  // Continue analyzing current event
 	  getentry = dtr->GetEntry(jentry);
@@ -513,7 +476,9 @@ void skimmer::Loop(TString FileName, TString OutputName)
 	  getHitside();
 	  
 	  //Call fitter 
-	  if ((hitside == 11 || hitside == 0) && (npoints > 20 && tot_sum > 25)){
+	  //if ((hitside == 11 || hitside == 0) && (npoints > 20 && tot_sum > 25)){
+	  //if ((hitside == 11 || hitside == 0) && (npoints > 20 && e_sum > 98010)){
+	  if ((hitside == 11 || hitside == 0) ){
 
 	     if (hitside == 11 && MicrotpcRecoTracks_m_partID[0][4] == 1) top_alpha = 1;
 		 else if (hitside == 11 && MicrotpcRecoTracks_m_partID[0][3] == 1) bottom_alpha = 1;
@@ -531,24 +496,27 @@ void skimmer::Loop(TString FileName, TString OutputName)
 
 		   else if (sigma < 4.0) {
 		   // Calculate x, y, z positions in microns 
-	       x2 = static_cast<double>(col[i]*250.0); 
-	       y2 = static_cast<double>(row[i]*50.0);
-	       z2 = static_cast<double>(bcid[i]*250.0);
+	         x2 = static_cast<double>(col[i]*250.0); 
+	         y2 = static_cast<double>(row[i]*50.0);
+	         z2 = -static_cast<double>(bcid[i]*250.0);
 
-		   int n1 = m_gr->GetN();
+		     int n1 = m_gr->GetN();
 
-		   m_gr->SetPoint(n1, x2, y2, z2);
+		     m_gr->SetPoint(n1, x2, y2, z2);
 		   }
 		 }
 	     fitTrack();
-		 de_dx = tot_sum/t_length;
-		 if (de_dx > 0.08 && hitside == 0) neutron = 1;
-		 else if (de_dx < 0.08 && npoints >= 40) proton = 1;
+		 //de_dx = tot_sum/t_length;
+		 de_dx = e_sum/t_length;
+		 //if (de_dx > 0.08 && hitside == 0) neutron = 1;
+		 //else if (de_dx < 0.08 && npoints >= 40) proton = 1;
+		 if (de_dx > 178.0 && hitside == 0) neutron = 1;
+		 else if (de_dx < 179 && npoints >= 40) proton = 1;
 	  }
 
 
 	  else {
-		 other = 1;
+		 if (xray != 1) other = 1;
 		
 		 // Reset fit variables to 0 if track is not passed to fit function
 	     chi2 = 0.;

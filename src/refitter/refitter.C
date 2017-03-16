@@ -42,10 +42,10 @@ TGraph2D *m_gr;
 
 void skimmer::fitTrack() {
   /* Find long aspect of track */
-  int x_max_index, y_max_index;
-  int x_min_index, y_min_index;
+  int x_max_index = 0, y_max_index = 0;
+  int x_min_index = 0, y_min_index = 0;
   double *x_vals, *y_vals, *z_vals;
-  int npoints;
+  int npoints = 0;
   npoints = m_gr->GetN();
   x_vals = m_gr->GetX(); y_vals = m_gr->GetY(); z_vals = m_gr->GetZ();
 
@@ -62,7 +62,8 @@ void skimmer::fitTrack() {
 	  y_min_index = ii;
   }
 
-  int p_min_idx = 0, p_max_idx = 0;
+  int p_min_idx = 0;
+  int p_max_idx = 0;
   if ( ( m_gr->GetXmax() - m_gr->GetXmin() ) >=
 	  ( m_gr->GetYmax() - m_gr->GetYmin() ) ) {
     p_min_idx = x_min_index;
@@ -88,8 +89,10 @@ void skimmer::fitTrack() {
 			 y_vals[p_max_idx]-y_vals[p_min_idx],
 			 z_vals[p_max_idx]-z_vals[p_min_idx]);
   
+
   double init_theta = temp_vector3.Theta();
   double init_phi   = temp_vector3.Phi();
+
 
   double pStart[5] = {x_vals[p_min_idx], y_vals[p_min_idx], z_vals[p_min_idx],
 	init_theta, init_phi};
@@ -478,7 +481,7 @@ void skimmer::Loop(TString FileName, TString OutputName)
 	  //Call fitter 
 	  //if ((hitside == 11 || hitside == 0) && (npoints > 20 && tot_sum > 25)){
 	  //if ((hitside == 11 || hitside == 0) && (npoints > 20 && e_sum > 98010)){
-	  if ((hitside == 11 || hitside == 0) ){
+	  if ((hitside == 11 || hitside == 0) && npoints > 0){
 
 	     if (hitside == 11 && MicrotpcRecoTracks_m_partID[0][4] == 1) top_alpha = 1;
 		 else if (hitside == 11 && MicrotpcRecoTracks_m_partID[0][3] == 1) bottom_alpha = 1;
@@ -507,11 +510,13 @@ void skimmer::Loop(TString FileName, TString OutputName)
 		 }
 	     fitTrack();
 		 //de_dx = tot_sum/t_length;
-		 de_dx = e_sum/t_length;
+		 if (t_length == 0) de_dx = 0;
+		 else de_dx = e_sum/t_length;
 		 //if (de_dx > 0.08 && hitside == 0) neutron = 1;
 		 //else if (de_dx < 0.08 && npoints >= 40) proton = 1;
 		 if (de_dx > 178.0 && hitside == 0) neutron = 1;
 		 else if (de_dx < 179 && npoints >= 40) proton = 1;
+
 	  }
 
 
@@ -522,6 +527,8 @@ void skimmer::Loop(TString FileName, TString OutputName)
 	     chi2 = 0.;
 	     theta = 0.;
 	     phi = 0.;
+		 de_dx = 0;
+		 t_length = 0;
 
 	     for (int m=0; m<5; m++){
 	   	    par_fit[m] = 0.;
@@ -538,7 +545,6 @@ void skimmer::Loop(TString FileName, TString OutputName)
 
 	  //Delete track
 	  m_gr->Delete();
-
 	  //if (jentry > 1000) break;
    }
    tr->Write();

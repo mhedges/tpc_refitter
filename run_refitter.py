@@ -56,13 +56,13 @@ def main():
 
 
             ### Uncomment this line if only non-existing files are to be generated
-            if os.path.isfile(ofile): continue
+            #if os.path.isfile(ofile): continue
 
             counter += 1
 
             ### Uncomment these lines if all files must be regenerated
             #input('Warning! You are about to delete all existing files!')
-            #if os.path.isfile(ofile): os.system('rm %s' % (ofile))
+            if os.path.isfile(ofile): os.system('rm %s' % (ofile))
 
             print('Infile is:', ifile)
             print('Outfile is:', ofile)
@@ -71,13 +71,15 @@ def main():
 
             #os.system('bsub -q s -o %s "./refitter %s %s"' % (log, ifile, ofile))
             ### Send large files to long queue, small files to short queue
-            df = root2rec(ifile, 'tree')
+            df = root2rec(ifile, 'tree', branches='m_event')
             evts = len(df)
+            print(evts)
 
             if evts > 60000:
                 os.system('bsub -q l -o %s "./refitter %s %s"' % (log, ifile, ofile))
             else:
                 os.system('bsub -q s -o %s "./refitter %s %s"' % (log, ifile, ofile))
+            input('Did it work?')
 
     if counter == 0:
         sys.path.append('py')

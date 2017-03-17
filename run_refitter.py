@@ -73,13 +73,11 @@ def main():
             ### Send large files to long queue, small files to short queue
             df = root2rec(ifile, 'tree', branches='m_event')
             evts = len(df)
-            print(evts)
 
             if evts > 60000:
                 os.system('bsub -q l -o %s "./refitter %s %s"' % (log, ifile, ofile))
             else:
                 os.system('bsub -q s -o %s "./refitter %s %s"' % (log, ifile, ofile))
-            input('Did it work?')
 
     if counter == 0:
         sys.path.append('py')

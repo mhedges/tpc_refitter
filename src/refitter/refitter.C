@@ -35,7 +35,9 @@
 #define NPERFILE 1000
 #define ARRSIZE 2400
 
-float weight[3] = {1., 1., 1.};
+// Define weights for track fit in x,y,z
+//float weight[3] = {1., 1., 1.};
+float weight[3] = {250.0/sqrt(12.0), 50.0/sqrt(12.0), 250.0/sqrt(12.0)};
 int iTPC=0;
 
 TGraph2D *m_gr;

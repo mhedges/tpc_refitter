@@ -95,14 +95,18 @@ void skimmer::fitTrack() {
   double init_theta = temp_vector3.Theta();
   double init_phi   = temp_vector3.Phi();
 
+  double twoPi = static_cast<double>(2.0 * 3.14159);
+
 
   double pStart[5] = {x_vals[p_min_idx], y_vals[p_min_idx], z_vals[p_min_idx],
 	init_theta, init_phi};
   min -> SetParameter(0, "x0",    pStart[0], 0.01, 0, 0);
   min -> SetParameter(1, "y0",    pStart[1], 0.01, 0, 0);
   min -> SetParameter(2, "z0",    pStart[2], 0.01, 0, 0);
-  min -> SetParameter(3, "theta", pStart[3], 0.0001, 0, 0);
-  min -> SetParameter(4, "phi",   pStart[4], 0.0001, 0, 0);
+
+  // Constrain theta and phi to ± 2pi radians
+  min -> SetParameter(3, "theta", pStart[3], 0.0001, -twoPi, twoPi);
+  min -> SetParameter(4, "phi",   pStart[4], 0.0001, -twoPi, twoPi);
   
   arglist[0] = 1000; // number of function calls
   arglist[1] = 0.01; // tolerance
@@ -547,7 +551,7 @@ void skimmer::Loop(TString FileName, TString OutputName)
 
 	  //Delete track
 	  m_gr->Delete();
-	  //if (jentry > 1000) break;
+	  if (jentry > 10000) break;
    }
    tr->Write();
    ofile->Write();

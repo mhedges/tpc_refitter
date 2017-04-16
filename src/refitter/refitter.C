@@ -36,8 +36,9 @@
 #define ARRSIZE 2400
 
 // Define weights for track fit in x,y,z
-float weight[3] = {1., 1., 1.};
-//float weight[3] = {250.0/sqrt(12.0), 50.0/sqrt(12.0), 250.0/sqrt(12.0)};
+//float weight[3] = {1., 1., 1.};
+float weight[3] = {250./sqrt(12.), 50./sqrt(12.), 250./sqrt(12.)};
+
 int iTPC=0;
 
 TGraph2D *m_gr;
@@ -95,8 +96,6 @@ void skimmer::fitTrack() {
   double init_theta = temp_vector3.Theta();
   double init_phi   = temp_vector3.Phi();
 
-  double twoPi = static_cast<double>(2.0 * 3.14159);
-
 
   double pStart[5] = {x_vals[p_min_idx], y_vals[p_min_idx], z_vals[p_min_idx],
 	init_theta, init_phi};
@@ -106,12 +105,8 @@ void skimmer::fitTrack() {
   min -> SetParameter(3, "theta", pStart[3], 0.0001, 0, 0);
   min -> SetParameter(4, "phi",   pStart[4], 0.0001, 0, 0);
 
-  // Constrain theta and phi to ± 2pi radians
-  //min -> SetParameter(3, "theta", pStart[3], 0.0001, -twoPi, twoPi);
-  //min -> SetParameter(4, "phi",   pStart[4], 0.0001, -twoPi, twoPi);
-  
   arglist[0] = 1000; // number of function calls
-  arglist[1] = 0.01; // tolerance
+  arglist[1] = 0.0001; // tolerance
   min -> ExecuteCommand("MIGRAD", arglist, 2);
   
   for (int iPar = 0; iPar < 5; iPar++){
